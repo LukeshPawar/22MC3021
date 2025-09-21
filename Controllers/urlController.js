@@ -56,3 +56,28 @@ exports.getStats = async (req, res) => {
         return res.status(500).json({ error: "Server error" });
     }
 };
+
+exports.redirectUrl = async (req, res) => {
+    try {
+        const { shortId } = req.params;
+
+        const urlDoc = await Url.findOne({ shortId });
+
+        if (!urlDoc) {
+            return res.status(404).json({ error: "Short URL not found" });
+        }
+        if (urlDoc.expiry < new Date()) {
+            return res.status(410).json({ error: "This short URL has expired" });
+        }
+
+
+        urlDoc.clicks += 1;
+        urlDoc.visitingHistory.push({ timestamp: new Date() });
+        await urlDoc.save();
+
+        return res.redirect(urlDoc.originalUrl); 
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Server error" });
+    }
+};
