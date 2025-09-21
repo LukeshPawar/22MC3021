@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const urlController = require("../Controllers/urlController");
+const { createShortUrl, getStats, redirectUrl } = require("../Controllers/urlController");
 
-router.post("/shorturls", urlController.createShortUrl);
-router.get("/shorturls/:shortId", urlController.getStats);
+router.post("/shorturls", createShortUrl);
+router.get("/stats/:shortId", getStats);
+router.get("/:shortId", redirectUrl);
 
 module.exports = router;
